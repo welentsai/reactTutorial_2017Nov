@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 // import App from './App';
 // import registerServiceWorker from './registerServiceWorker';
-
 // ReactDOM.render(<App />, document.getElementById('root'));
 // registerServiceWorker();
 
@@ -11,24 +10,17 @@ import './index.css';
 // 1. React components have props => this.props => Passing Data Through Props
 // 2. React components can have state => this.state
 
-// passing a arrow function as the onClick prop
+/* Square no longer keeps its own state; it receives its value from its parent Board 
+   and informs its parent when it’s clicked. We call components like this "controlled components" */
 class Square extends React.Component {
-	constructor(props) { // set this.state in the constructor
-	  super(props); // need to explicitly call super()
-	  this.state = { // initialize this.state
-	    value: null,
-	  };
-	 }
-
+  // register a button onClick event listener 
+  // event listener 呼叫流程
+  // <Button> onClick -> <Square> this.props.onClick
+  // <Square> this.props.onClick -> <Board> this.handleClick(i) 
   render() {
-    // return (
-    //   <button className="square" onClick={() => alert('click')}> 
-    //     {this.state.value}
-    //   </button>
-    // );
     return (
-      <button className="square" onClick={() => this.setState({value: 'X'})}>
-        {this.state.value}
+      <button className="square" onClick={() => this.props.onClick()}>
+        {this.props.value}
       </button>
     );
   }
@@ -38,8 +30,31 @@ class Square extends React.Component {
 // so that the parent can pass state back down via props
 // so that the child components are always in sync with each other and with the parent
 class Board extends React.Component {
+  constructor(props) { // set its initial state to contain an array with 9 nulls, corresponding to the 9 squares
+    super(props);
+    this.state = {
+      squares: Array(9).fill(null),
+    };
+  }
+
+  handleClick(i) {
+    const squares = this.state.squares.slice(); //  copy the squares array, keep immutability
+    squares[i] = 'X';
+    // change state via this.setState()
+    // the Square components rerender automatically
+    this.setState({squares: squares}); 
+  }
+
   renderSquare(i) {
-    return <Square value={i}/>; // passing data to props.value
+    // passing data to child component via props
+    // set up child component's props.value
+    // set up child component's props.onClick
+    return (  
+      <Square
+        value={this.state.squares[i]}
+        onClick={() => this.handleClick(i)}
+      />
+    );
   }
 
   render() {
