@@ -10,6 +10,12 @@ import './index.css';
 // 1. React components have props => this.props => Parent component passing data through props
 // 2. React components can have state => this.state => component self-maintained data
 
+// React 設計原理 => The Data Flows Down
+// Props are Read-Only from parent component
+// State is similar to props, but it is private and fully controlled by the component itself
+// 結論 => A component may choose to pass its state down as props to its child components
+
+// 慣例 component 名稱第一個字母大寫
 /* Square no longer keeps its own state; it receives its value from its parent Board 
    and informs its parent when it’s clicked. We call components like this "controlled components" */
 class Square extends React.Component {
@@ -30,7 +36,7 @@ class Square extends React.Component {
 // Note that onClick={props.onClick()} would not work 
 // because it would call props.onClick immediately instead of passing it down 
 function Square2(props) {
-  return (
+  return ( // return React element
     <button className="square" onClick={props.onClick}>
       {props.value}
     </button>
@@ -101,6 +107,7 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
+    console.log("event handle i : " + i);
     // const history = this.state.history;
     const history = this.state.history.slice(0, this.state.stepNumber + 1); //回到第#步
     // const current = history[history.length - 1];
@@ -143,6 +150,8 @@ class Game extends React.Component {
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
+      // Keys help React identify which items have changed, are added, or are removed. 
+      // Keys should be given to the elements inside the array to give the elements a stable identity:
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
